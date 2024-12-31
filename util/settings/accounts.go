@@ -11,6 +11,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	v1 "k8s.io/api/core/v1"
+	"k8s.io/client-go/util/retry"
 
 	"github.com/argoproj/argo-cd/v2/common"
 )
@@ -105,7 +106,7 @@ func (mgr *SettingsManager) saveAccount(name string, account Account) error {
 func (mgr *SettingsManager) AddAccount(name string, account Account) error {
 	accounts, err := mgr.GetAccounts()
 	if err != nil {
-		return err
+		return fmt.Errorf("error getting accounts: %w", err)
 	}
 	if _, ok := accounts[name]; ok {
 		return status.Errorf(codes.AlreadyExists, "account '%s' already exists", name)
@@ -127,30 +128,28 @@ func (mgr *SettingsManager) GetAccount(name string) (*Account, error) {
 }
 
 // UpdateAccount runs the callback function against an account that matches to the specified name
-//and persist changes applied by the callback.
+// and persist changes applied by the callback.
 func (mgr *SettingsManager) UpdateAccount(name string, callback func(account *Account) error) error {
-	account, err := mgr.GetAccount(name)
-	if err != nil {
-		return err
-	}
-	err = callback(account)
-	if err != nil {
-		return err
-	}
-	return mgr.saveAccount(name, *account)
+	return retry.RetryOnConflict(retry.DefaultBackoff, func() error {
+		account, err := mgr.GetAccount(name)
+		if err != nil {
+			return err
+		}
+		err = callback(account)
+		if err != nil {
+			return err
+		}
+		return mgr.saveAccount(name, *account)
+	})
 }
 
 // GetAccounts returns list of configured accounts
 func (mgr *SettingsManager) GetAccounts() (map[string]Account, error) {
-	err := mgr.ensureSynced(false)
+	cm, err := mgr.getConfigMap()
 	if err != nil {
 		return nil, err
 	}
-	secret, err := mgr.secrets.Secrets(mgr.namespace).Get(common.ArgoCDSecretName)
-	if err != nil {
-		return nil, err
-	}
-	cm, err := mgr.configmaps.ConfigMaps(mgr.namespace).Get(common.ArgoCDConfigMapName)
+	secret, err := mgr.getSecret()
 	if err != nil {
 		return nil, err
 	}
@@ -238,7 +237,7 @@ func parseAccounts(secret *v1.Secret, cm *v1.ConfigMap) (map[string]Account, err
 	}
 
 	for key, v := range cm.Data {
-		if !strings.HasPrefix(key, fmt.Sprintf("%s.", accountsKeyPrefix)) {
+		if !strings.HasPrefix(key, accountsKeyPrefix+".") {
 			continue
 		}
 

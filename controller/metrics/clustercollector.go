@@ -41,6 +41,12 @@ var (
 		descClusterDefaultLabels,
 		nil,
 	)
+	descClusterConnectionStatus = prometheus.NewDesc(
+		"argocd_cluster_connection_status",
+		"The k8s cluster current connection status.",
+		append(descClusterDefaultLabels, "k8s_version"),
+		nil,
+	)
 )
 
 type HasClustersInfo interface {
@@ -77,6 +83,7 @@ func (c *clusterCollector) Describe(ch chan<- *prometheus.Desc) {
 	ch <- descClusterCacheResources
 	ch <- descClusterAPIs
 	ch <- descClusterCacheAgeSeconds
+	ch <- descClusterConnectionStatus
 }
 
 func (c *clusterCollector) Collect(ch chan<- prometheus.Metric) {
@@ -91,5 +98,6 @@ func (c *clusterCollector) Collect(ch chan<- prometheus.Metric) {
 			cacheAgeSeconds = int(now.Sub(*c.LastCacheSyncTime).Seconds())
 		}
 		ch <- prometheus.MustNewConstMetric(descClusterCacheAgeSeconds, prometheus.GaugeValue, float64(cacheAgeSeconds), defaultValues...)
+		ch <- prometheus.MustNewConstMetric(descClusterConnectionStatus, prometheus.GaugeValue, boolFloat64(c.SyncError == nil), append(defaultValues, c.K8SVersion)...)
 	}
 }

@@ -3,7 +3,7 @@ package rbacpolicy
 import (
 	"strings"
 
-	jwt "github.com/dgrijalva/jwt-go/v4"
+	"github.com/golang-jwt/jwt/v4"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/argoproj/argo-cd/v2/pkg/apis/application/v1alpha1"
@@ -14,13 +14,18 @@ import (
 
 const (
 	// please add new items to Resources
-	ResourceClusters     = "clusters"
-	ResourceProjects     = "projects"
-	ResourceApplications = "applications"
-	ResourceRepositories = "repositories"
-	ResourceCertificates = "certificates"
-	ResourceAccounts     = "accounts"
-	ResourceGPGKeys      = "gpgkeys"
+	ResourceClusters          = "clusters"
+	ResourceProjects          = "projects"
+	ResourceApplications      = "applications"
+	ResourceApplicationSets   = "applicationsets"
+	ResourceRepositories      = "repositories"
+	ResourceWriteRepositories = "write-repositories"
+	ResourceCertificates      = "certificates"
+	ResourceAccounts          = "accounts"
+	ResourceGPGKeys           = "gpgkeys"
+	ResourceLogs              = "logs"
+	ResourceExec              = "exec"
+	ResourceExtensions        = "extensions"
 
 	// please add new items to Actions
 	ActionGet      = "get"
@@ -30,6 +35,7 @@ const (
 	ActionSync     = "sync"
 	ActionOverride = "override"
 	ActionAction   = "action"
+	ActionInvoke   = "invoke"
 )
 
 var (
@@ -38,8 +44,15 @@ var (
 		ResourceClusters,
 		ResourceProjects,
 		ResourceApplications,
+		ResourceApplicationSets,
 		ResourceRepositories,
+		ResourceWriteRepositories,
 		ResourceCertificates,
+		ResourceAccounts,
+		ResourceGPGKeys,
+		ResourceLogs,
+		ResourceExec,
+		ResourceExtensions,
 	}
 	Actions = []string{
 		ActionGet,
@@ -48,6 +61,8 @@ var (
 		ActionDelete,
 		ActionSync,
 		ActionOverride,
+		ActionAction,
+		ActionInvoke,
 	}
 )
 
@@ -105,18 +120,23 @@ func (p *RBACPolicyEnforcer) EnforceClaims(claims jwt.Claims, rvals ...interface
 	// Check if the request is for an application resource. We have special enforcement which takes
 	// into consideration the project's token and group bindings
 	var runtimePolicy string
+	var projName string
 	proj := p.getProjectFromRequest(rvals...)
 	if proj != nil {
 		if IsProjectSubject(subject) {
 			return p.enforceProjectToken(subject, proj, rvals...)
 		}
 		runtimePolicy = proj.ProjectPoliciesString()
+		projName = proj.Name
 	}
 
+	// NOTE: This calls prevent multiple creation of the wrapped enforcer
+	enforcer := p.enf.CreateEnforcerWithRuntimePolicy(projName, runtimePolicy)
+
 	// Check the subject. This is typically the 'admin' case.
-	// NOTE: the call to EnforceRuntimePolicy will also consider the default role
+	// NOTE: the call to EnforceWithCustomEnforcer will also consider the default role
 	vals := append([]interface{}{subject}, rvals[1:]...)
-	if p.enf.EnforceRuntimePolicy(runtimePolicy, vals...) {
+	if p.enf.EnforceWithCustomEnforcer(enforcer, vals...) {
 		return true
 	}
 
@@ -126,13 +146,26 @@ func (p *RBACPolicyEnforcer) EnforceClaims(claims jwt.Claims, rvals ...interface
 	}
 	// Finally check if any of the user's groups grant them permissions
 	groups := jwtutil.GetScopeValues(mapClaims, scopes)
-	for _, group := range groups {
-		vals := append([]interface{}{group}, rvals[1:]...)
-		if p.enf.EnforceRuntimePolicy(runtimePolicy, vals...) {
-			return true
+
+	// Get groups to reduce the amount to checking groups
+	groupingPolicies, err := enforcer.GetGroupingPolicy()
+	if err != nil {
+		log.WithError(err).Error("failed to get grouping policy")
+		return false
+	}
+	for gidx := range groups {
+		for gpidx := range groupingPolicies {
+			// Prefilter user groups by groups defined in the model
+			if groupingPolicies[gpidx][0] == groups[gidx] {
+				vals := append([]interface{}{groups[gidx]}, rvals[1:]...)
+				if p.enf.EnforceWithCustomEnforcer(enforcer, vals...) {
+					return true
+				}
+				break
+			}
 		}
 	}
-	logCtx := log.WithField("claims", claims).WithField("rval", rvals)
+	logCtx := log.WithFields(log.Fields{"claims": claims, "rval": rvals, "subject": subject, "groups": groups, "project": projName, "scopes": scopes})
 	logCtx.Debug("enforce failed")
 	return false
 }
@@ -153,8 +186,8 @@ func (p *RBACPolicyEnforcer) getProjectFromRequest(rvals ...interface{}) *v1alph
 	if res, ok := rvals[1].(string); ok {
 		if obj, ok := rvals[3].(string); ok {
 			switch res {
-			case ResourceApplications:
-				if objSplit := strings.Split(obj, "/"); len(objSplit) == 2 {
+			case ResourceApplications, ResourceRepositories, ResourceClusters, ResourceLogs, ResourceExec:
+				if objSplit := strings.Split(obj, "/"); len(objSplit) >= 2 {
 					return getProjectByName(objSplit[0])
 				}
 			case ResourceProjects:
@@ -179,6 +212,5 @@ func (p *RBACPolicyEnforcer) enforceProjectToken(subject string, proj *v1alpha1.
 	}
 
 	vals := append([]interface{}{subject}, rvals[1:]...)
-	return p.enf.EnforceRuntimePolicy(proj.ProjectPoliciesString(), vals...)
-
+	return p.enf.EnforceRuntimePolicy(proj.Name, proj.ProjectPoliciesString(), vals...)
 }

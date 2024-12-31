@@ -1,13 +1,16 @@
 module.exports = {
   preset: 'ts-jest',
-  testEnvironment: 'node',
+  testEnvironment: 'jsdom',
   reporters: ['default', 'jest-junit'],
   collectCoverage: true,
   transformIgnorePatterns: ['node_modules/(?!(argo-ui)/)'],
-  globals: {
-    'ts-jest': {
+  transform: {
+    '^.+\\.tsx?$': ['ts-jest', {
       isolatedModules: true,
-    },
+    }]
+  },
+  globals: {
+    'self': {}
   },
   moduleNameMapper: {
     // https://github.com/facebook/jest/issues/3094

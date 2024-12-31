@@ -84,17 +84,30 @@ type Settings struct {
 	GoogleAnalytics    *GoogleAnalyticsConfig                `protobuf:"bytes,7,opt,name=googleAnalytics,proto3" json:"googleAnalytics,omitempty"`
 	KustomizeOptions   *v1alpha1.KustomizeOptions            `protobuf:"bytes,8,opt,name=kustomizeOptions,proto3" json:"kustomizeOptions,omitempty"`
 	// Help settings
-	Help                    *Help                              `protobuf:"bytes,9,opt,name=help,proto3" json:"help,omitempty"`
-	Plugins                 []*Plugin                          `protobuf:"bytes,10,rep,name=plugins,proto3" json:"plugins,omitempty"`
-	UserLoginsDisabled      bool                               `protobuf:"varint,11,opt,name=userLoginsDisabled,proto3" json:"userLoginsDisabled,omitempty"`
-	ConfigManagementPlugins []*v1alpha1.ConfigManagementPlugin `protobuf:"bytes,12,rep,name=configManagementPlugins,proto3" json:"configManagementPlugins,omitempty"`
-	KustomizeVersions       []string                           `protobuf:"bytes,13,rep,name=kustomizeVersions,proto3" json:"kustomizeVersions,omitempty"`
-	UiCssURL                string                             `protobuf:"bytes,14,opt,name=uiCssURL,proto3" json:"uiCssURL,omitempty"`
-	UiBannerContent         string                             `protobuf:"bytes,15,opt,name=uiBannerContent,proto3" json:"uiBannerContent,omitempty"`
-	UiBannerURL             string                             `protobuf:"bytes,16,opt,name=uiBannerURL,proto3" json:"uiBannerURL,omitempty"`
-	XXX_NoUnkeyedLiteral    struct{}                           `json:"-"`
-	XXX_unrecognized        []byte                             `json:"-"`
-	XXX_sizecache           int32                              `json:"-"`
+	Help               *Help     `protobuf:"bytes,9,opt,name=help,proto3" json:"help,omitempty"`
+	Plugins            []*Plugin `protobuf:"bytes,10,rep,name=plugins,proto3" json:"plugins,omitempty"`
+	UserLoginsDisabled bool      `protobuf:"varint,11,opt,name=userLoginsDisabled,proto3" json:"userLoginsDisabled,omitempty"`
+	// Deprecated: use sidecar plugins instead.
+	ConfigManagementPlugins   []*v1alpha1.ConfigManagementPlugin `protobuf:"bytes,12,rep,name=configManagementPlugins,proto3" json:"configManagementPlugins,omitempty"`
+	KustomizeVersions         []string                           `protobuf:"bytes,13,rep,name=kustomizeVersions,proto3" json:"kustomizeVersions,omitempty"`
+	UiCssURL                  string                             `protobuf:"bytes,14,opt,name=uiCssURL,proto3" json:"uiCssURL,omitempty"`
+	UiBannerContent           string                             `protobuf:"bytes,15,opt,name=uiBannerContent,proto3" json:"uiBannerContent,omitempty"`
+	UiBannerURL               string                             `protobuf:"bytes,16,opt,name=uiBannerURL,proto3" json:"uiBannerURL,omitempty"`
+	PasswordPattern           string                             `protobuf:"bytes,17,opt,name=passwordPattern,proto3" json:"passwordPattern,omitempty"`
+	TrackingMethod            string                             `protobuf:"bytes,18,opt,name=trackingMethod,proto3" json:"trackingMethod,omitempty"`
+	UiBannerPermanent         bool                               `protobuf:"varint,19,opt,name=uiBannerPermanent,proto3" json:"uiBannerPermanent,omitempty"`
+	UiBannerPosition          string                             `protobuf:"bytes,20,opt,name=uiBannerPosition,proto3" json:"uiBannerPosition,omitempty"`
+	StatusBadgeRootUrl        string                             `protobuf:"bytes,21,opt,name=statusBadgeRootUrl,proto3" json:"statusBadgeRootUrl,omitempty"`
+	ExecEnabled               bool                               `protobuf:"varint,22,opt,name=execEnabled,proto3" json:"execEnabled,omitempty"`
+	ControllerNamespace       string                             `protobuf:"bytes,23,opt,name=controllerNamespace,proto3" json:"controllerNamespace,omitempty"`
+	AppsInAnyNamespaceEnabled bool                               `protobuf:"varint,24,opt,name=appsInAnyNamespaceEnabled,proto3" json:"appsInAnyNamespaceEnabled,omitempty"`
+	ImpersonationEnabled      bool                               `protobuf:"varint,25,opt,name=impersonationEnabled,proto3" json:"impersonationEnabled,omitempty"`
+	InstallationID            string                             `protobuf:"bytes,26,opt,name=installationID,proto3" json:"installationID,omitempty"`
+	AdditionalURLs            []string                           `protobuf:"bytes,27,rep,name=additionalUrls,proto3" json:"additionalUrls,omitempty"`
+	HydratorEnabled           bool                               `protobuf:"varint,28,opt,name=hydratorEnabled,proto3" json:"hydratorEnabled,omitempty"`
+	XXX_NoUnkeyedLiteral      struct{}                           `json:"-"`
+	XXX_unrecognized          []byte                             `json:"-"`
+	XXX_sizecache             int32                              `json:"-"`
 }
 
 func (m *Settings) Reset()         { *m = Settings{} }
@@ -242,6 +255,90 @@ func (m *Settings) GetUiBannerURL() string {
 	return ""
 }
 
+func (m *Settings) GetPasswordPattern() string {
+	if m != nil {
+		return m.PasswordPattern
+	}
+	return ""
+}
+
+func (m *Settings) GetTrackingMethod() string {
+	if m != nil {
+		return m.TrackingMethod
+	}
+	return ""
+}
+
+func (m *Settings) GetUiBannerPermanent() bool {
+	if m != nil {
+		return m.UiBannerPermanent
+	}
+	return false
+}
+
+func (m *Settings) GetUiBannerPosition() string {
+	if m != nil {
+		return m.UiBannerPosition
+	}
+	return ""
+}
+
+func (m *Settings) GetStatusBadgeRootUrl() string {
+	if m != nil {
+		return m.StatusBadgeRootUrl
+	}
+	return ""
+}
+
+func (m *Settings) GetExecEnabled() bool {
+	if m != nil {
+		return m.ExecEnabled
+	}
+	return false
+}
+
+func (m *Settings) GetControllerNamespace() string {
+	if m != nil {
+		return m.ControllerNamespace
+	}
+	return ""
+}
+
+func (m *Settings) GetAppsInAnyNamespaceEnabled() bool {
+	if m != nil {
+		return m.AppsInAnyNamespaceEnabled
+	}
+	return false
+}
+
+func (m *Settings) GetImpersonationEnabled() bool {
+	if m != nil {
+		return m.ImpersonationEnabled
+	}
+	return false
+}
+
+func (m *Settings) GetInstallationID() string {
+	if m != nil {
+		return m.InstallationID
+	}
+	return ""
+}
+
+func (m *Settings) GetAdditionalURLs() []string {
+	if m != nil {
+		return m.AdditionalURLs
+	}
+	return nil
+}
+
+func (m *Settings) GetHydratorEnabled() bool {
+	if m != nil {
+		return m.HydratorEnabled
+	}
+	return false
+}
+
 type GoogleAnalyticsConfig struct {
 	TrackingID           string   `protobuf:"bytes,1,opt,name=trackingID,proto3" json:"trackingID,omitempty"`
 	AnonymizeUsers       bool     `protobuf:"varint,2,opt,name=anonymizeUsers,proto3" json:"anonymizeUsers,omitempty"`
@@ -297,22 +394,71 @@ func (m *GoogleAnalyticsConfig) GetAnonymizeUsers() bool {
 	return false
 }
 
+type SettingsPluginsResponse struct {
+	Plugins              []*Plugin `protobuf:"bytes,1,rep,name=plugins,proto3" json:"plugins,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}  `json:"-"`
+	XXX_unrecognized     []byte    `json:"-"`
+	XXX_sizecache        int32     `json:"-"`
+}
+
+func (m *SettingsPluginsResponse) Reset()         { *m = SettingsPluginsResponse{} }
+func (m *SettingsPluginsResponse) String() string { return proto.CompactTextString(m) }
+func (*SettingsPluginsResponse) ProtoMessage()    {}
+func (*SettingsPluginsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_a480d494da040caa, []int{3}
+}
+func (m *SettingsPluginsResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *SettingsPluginsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_SettingsPluginsResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *SettingsPluginsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SettingsPluginsResponse.Merge(m, src)
+}
+func (m *SettingsPluginsResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *SettingsPluginsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_SettingsPluginsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SettingsPluginsResponse proto.InternalMessageInfo
+
+func (m *SettingsPluginsResponse) GetPlugins() []*Plugin {
+	if m != nil {
+		return m.Plugins
+	}
+	return nil
+}
+
 // Help settings
 type Help struct {
 	// the URL for getting chat help, this will typically be your Slack channel for support
 	ChatUrl string `protobuf:"bytes,1,opt,name=chatUrl,proto3" json:"chatUrl,omitempty"`
 	// the text for getting chat help, defaults to "Chat now!"
-	ChatText             string   `protobuf:"bytes,2,opt,name=chatText,proto3" json:"chatText,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	ChatText string `protobuf:"bytes,2,opt,name=chatText,proto3" json:"chatText,omitempty"`
+	// the URLs for downloading argocd binaries
+	BinaryUrls           map[string]string `protobuf:"bytes,3,rep,name=binaryUrls,proto3" json:"binaryUrls,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
+	XXX_unrecognized     []byte            `json:"-"`
+	XXX_sizecache        int32             `json:"-"`
 }
 
 func (m *Help) Reset()         { *m = Help{} }
 func (m *Help) String() string { return proto.CompactTextString(m) }
 func (*Help) ProtoMessage()    {}
 func (*Help) Descriptor() ([]byte, []int) {
-	return fileDescriptor_a480d494da040caa, []int{3}
+	return fileDescriptor_a480d494da040caa, []int{4}
 }
 func (m *Help) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -355,6 +501,13 @@ func (m *Help) GetChatText() string {
 	return ""
 }
 
+func (m *Help) GetBinaryUrls() map[string]string {
+	if m != nil {
+		return m.BinaryUrls
+	}
+	return nil
+}
+
 // Plugin settings
 type Plugin struct {
 	// the name of the plugin, e.g. "kasane"
@@ -368,7 +521,7 @@ func (m *Plugin) Reset()         { *m = Plugin{} }
 func (m *Plugin) String() string { return proto.CompactTextString(m) }
 func (*Plugin) ProtoMessage()    {}
 func (*Plugin) Descriptor() ([]byte, []int) {
-	return fileDescriptor_a480d494da040caa, []int{4}
+	return fileDescriptor_a480d494da040caa, []int{5}
 }
 func (m *Plugin) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -415,7 +568,7 @@ func (m *DexConfig) Reset()         { *m = DexConfig{} }
 func (m *DexConfig) String() string { return proto.CompactTextString(m) }
 func (*DexConfig) ProtoMessage()    {}
 func (*DexConfig) Descriptor() ([]byte, []int) {
-	return fileDescriptor_a480d494da040caa, []int{5}
+	return fileDescriptor_a480d494da040caa, []int{6}
 }
 func (m *DexConfig) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -463,7 +616,7 @@ func (m *Connector) Reset()         { *m = Connector{} }
 func (m *Connector) String() string { return proto.CompactTextString(m) }
 func (*Connector) ProtoMessage()    {}
 func (*Connector) Descriptor() ([]byte, []int) {
-	return fileDescriptor_a480d494da040caa, []int{6}
+	return fileDescriptor_a480d494da040caa, []int{7}
 }
 func (m *Connector) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -507,22 +660,23 @@ func (m *Connector) GetType() string {
 }
 
 type OIDCConfig struct {
-	Name                 string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Issuer               string                 `protobuf:"bytes,2,opt,name=issuer,proto3" json:"issuer,omitempty"`
-	ClientID             string                 `protobuf:"bytes,3,opt,name=clientID,proto3" json:"clientID,omitempty"`
-	CLIClientID          string                 `protobuf:"bytes,4,opt,name=cliClientID,proto3" json:"cliClientID,omitempty"`
-	Scopes               []string               `protobuf:"bytes,5,rep,name=scopes,proto3" json:"scopes,omitempty"`
-	IDTokenClaims        map[string]*oidc.Claim `protobuf:"bytes,6,rep,name=idTokenClaims,proto3" json:"idTokenClaims,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
-	XXX_NoUnkeyedLiteral struct{}               `json:"-"`
-	XXX_unrecognized     []byte                 `json:"-"`
-	XXX_sizecache        int32                  `json:"-"`
+	Name                     string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Issuer                   string                 `protobuf:"bytes,2,opt,name=issuer,proto3" json:"issuer,omitempty"`
+	ClientID                 string                 `protobuf:"bytes,3,opt,name=clientID,proto3" json:"clientID,omitempty"`
+	CLIClientID              string                 `protobuf:"bytes,4,opt,name=cliClientID,proto3" json:"cliClientID,omitempty"`
+	Scopes                   []string               `protobuf:"bytes,5,rep,name=scopes,proto3" json:"scopes,omitempty"`
+	IDTokenClaims            map[string]*oidc.Claim `protobuf:"bytes,6,rep,name=idTokenClaims,proto3" json:"idTokenClaims,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	EnablePKCEAuthentication bool                   `protobuf:"varint,7,opt,name=enablePKCEAuthentication,proto3" json:"enablePKCEAuthentication,omitempty"`
+	XXX_NoUnkeyedLiteral     struct{}               `json:"-"`
+	XXX_unrecognized         []byte                 `json:"-"`
+	XXX_sizecache            int32                  `json:"-"`
 }
 
 func (m *OIDCConfig) Reset()         { *m = OIDCConfig{} }
 func (m *OIDCConfig) String() string { return proto.CompactTextString(m) }
 func (*OIDCConfig) ProtoMessage()    {}
 func (*OIDCConfig) Descriptor() ([]byte, []int) {
-	return fileDescriptor_a480d494da040caa, []int{7}
+	return fileDescriptor_a480d494da040caa, []int{8}
 }
 func (m *OIDCConfig) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -593,12 +747,21 @@ func (m *OIDCConfig) GetIDTokenClaims() map[string]*oidc.Claim {
 	return nil
 }
 
+func (m *OIDCConfig) GetEnablePKCEAuthentication() bool {
+	if m != nil {
+		return m.EnablePKCEAuthentication
+	}
+	return false
+}
+
 func init() {
 	proto.RegisterType((*SettingsQuery)(nil), "cluster.SettingsQuery")
 	proto.RegisterType((*Settings)(nil), "cluster.Settings")
 	proto.RegisterMapType((map[string]*v1alpha1.ResourceOverride)(nil), "cluster.Settings.ResourceOverridesEntry")
 	proto.RegisterType((*GoogleAnalyticsConfig)(nil), "cluster.GoogleAnalyticsConfig")
+	proto.RegisterType((*SettingsPluginsResponse)(nil), "cluster.SettingsPluginsResponse")
 	proto.RegisterType((*Help)(nil), "cluster.Help")
+	proto.RegisterMapType((map[string]string)(nil), "cluster.Help.BinaryUrlsEntry")
 	proto.RegisterType((*Plugin)(nil), "cluster.Plugin")
 	proto.RegisterType((*DexConfig)(nil), "cluster.DexConfig")
 	proto.RegisterType((*Connector)(nil), "cluster.Connector")
@@ -609,68 +772,88 @@ func init() {
 func init() { proto.RegisterFile("server/settings/settings.proto", fileDescriptor_a480d494da040caa) }
 
 var fileDescriptor_a480d494da040caa = []byte{
-	// 976 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x56, 0xcf, 0x6f, 0x1b, 0xc5,
-	0x17, 0xd7, 0xc6, 0x69, 0x62, 0x3f, 0x37, 0x71, 0x32, 0xdf, 0x2f, 0x61, 0xb1, 0x2a, 0xc7, 0xf8,
-	0x50, 0x19, 0x09, 0x76, 0x89, 0x2b, 0x04, 0x42, 0x48, 0x80, 0xd7, 0x55, 0x6b, 0xea, 0x92, 0x32,
-	0x4d, 0x7a, 0x40, 0x42, 0xd1, 0x64, 0x77, 0xd8, 0x0c, 0xde, 0xcc, 0xac, 0x66, 0x66, 0xad, 0xba,
-	0x47, 0x6e, 0x5c, 0xb8, 0xc0, 0x1f, 0xd5, 0x23, 0x12, 0x77, 0x0b, 0x59, 0xfc, 0x21, 0x68, 0x67,
-	0x7f, 0x64, 0x63, 0x9b, 0x1f, 0x52, 0x6f, 0x6f, 0xde, 0xe7, 0xfd, 0x9a, 0x37, 0x9f, 0x7d, 0x6f,
-	0xa1, 0xa3, 0xa8, 0x9c, 0x51, 0xe9, 0x2a, 0xaa, 0x35, 0xe3, 0xa1, 0x2a, 0x05, 0x27, 0x96, 0x42,
-	0x0b, 0xb4, 0xeb, 0x47, 0x89, 0xd2, 0x54, 0xb6, 0xff, 0x1f, 0x8a, 0x50, 0x18, 0x9d, 0x9b, 0x4a,
-	0x19, 0xdc, 0xbe, 0x17, 0x0a, 0x11, 0x46, 0xd4, 0x25, 0x31, 0x73, 0x09, 0xe7, 0x42, 0x13, 0xcd,
-	0x04, 0xcf, 0x9d, 0xdb, 0x93, 0x90, 0xe9, 0xab, 0xe4, 0xd2, 0xf1, 0xc5, 0xb5, 0x4b, 0xa4, 0x71,
-	0xff, 0xc1, 0x08, 0x1f, 0xf8, 0x81, 0x3b, 0x1b, 0xb8, 0xf1, 0x34, 0x4c, 0x3d, 0x95, 0x4b, 0xe2,
-	0x38, 0x62, 0xbe, 0xf1, 0x75, 0x67, 0x27, 0x24, 0x8a, 0xaf, 0xc8, 0x89, 0x1b, 0x52, 0x4e, 0x25,
-	0xd1, 0x34, 0xc8, 0xa3, 0x7d, 0xf1, 0x2f, 0xd1, 0x56, 0x6f, 0x22, 0x58, 0xe0, 0xbb, 0x7e, 0x44,
-	0xd8, 0x75, 0x5e, 0x4f, 0xaf, 0x05, 0x7b, 0xcf, 0x73, 0xf4, 0x9b, 0x84, 0xca, 0x79, 0xef, 0x75,
-	0x1d, 0xea, 0x85, 0x06, 0xbd, 0x03, 0xb5, 0x44, 0x46, 0xb6, 0xd5, 0xb5, 0xfa, 0x8d, 0xe1, 0xee,
-	0x72, 0x71, 0x5c, 0x3b, 0xc7, 0x13, 0x9c, 0xea, 0xd0, 0x87, 0xd0, 0x08, 0xe8, 0x4b, 0x4f, 0xf0,
-	0xef, 0x59, 0x68, 0x6f, 0x75, 0xad, 0x7e, 0x73, 0x80, 0x9c, 0xbc, 0x33, 0xce, 0xa8, 0x40, 0xf0,
-	0x8d, 0x11, 0xf2, 0x00, 0xd2, 0xfc, 0xb9, 0x4b, 0xcd, 0xb8, 0xfc, 0xaf, 0x74, 0x39, 0x1d, 0x8f,
-	0xbc, 0x0c, 0x1a, 0xee, 0x2f, 0x17, 0xc7, 0x70, 0x73, 0xc6, 0x15, 0x37, 0xd4, 0x85, 0x26, 0x89,
-	0xe3, 0x09, 0xb9, 0xa4, 0xd1, 0x13, 0x3a, 0xb7, 0xb7, 0xd3, 0xca, 0x70, 0x55, 0x85, 0x5e, 0xc0,
-	0xa1, 0xa4, 0x4a, 0x24, 0xd2, 0xa7, 0xa7, 0x33, 0x2a, 0x25, 0x0b, 0xa8, 0xb2, 0xef, 0x74, 0x6b,
-	0xfd, 0xe6, 0xa0, 0x5f, 0x66, 0x2b, 0x6e, 0xe8, 0xe0, 0x55, 0xd3, 0x87, 0x5c, 0xcb, 0x39, 0x5e,
-	0x0f, 0x81, 0x1c, 0x40, 0x4a, 0x13, 0x9d, 0xa8, 0x21, 0x09, 0x42, 0xfa, 0x90, 0x93, 0xcb, 0x88,
-	0x06, 0xf6, 0x4e, 0xd7, 0xea, 0xd7, 0xf1, 0x06, 0x04, 0x3d, 0x86, 0x56, 0xc6, 0x84, 0x2f, 0x39,
-	0x89, 0xe6, 0x9a, 0xf9, 0xca, 0xde, 0x35, 0x77, 0xee, 0x94, 0x55, 0x3c, 0xba, 0x8d, 0xe7, 0xd7,
-	0x5d, 0x75, 0x43, 0xaf, 0xe0, 0x60, 0x9a, 0x28, 0x2d, 0xae, 0xd9, 0x2b, 0x7a, 0x1a, 0x1b, 0x36,
-	0xd9, 0x75, 0x13, 0xea, 0x6b, 0xe7, 0x86, 0x00, 0x4e, 0x41, 0x00, 0x23, 0x5c, 0xf8, 0x81, 0x33,
-	0x1b, 0x38, 0xf1, 0x34, 0x74, 0x52, 0x3a, 0x39, 0x15, 0x3a, 0x39, 0x05, 0x9d, 0x9c, 0x27, 0x2b,
-	0x51, 0xf1, 0x5a, 0x1e, 0xf4, 0x2e, 0x6c, 0x5f, 0xd1, 0x28, 0xb6, 0x1b, 0x26, 0xdf, 0x5e, 0x59,
-	0xfa, 0x63, 0x1a, 0xc5, 0xd8, 0x40, 0xe8, 0x3d, 0xd8, 0x8d, 0xa3, 0x24, 0x64, 0x5c, 0xd9, 0x60,
-	0xda, 0xdc, 0x2a, 0xad, 0x9e, 0x19, 0x3d, 0x2e, 0xf0, 0xb4, 0x87, 0x89, 0xa2, 0x72, 0x22, 0xd2,
-	0xd3, 0x88, 0xa9, 0xac, 0x87, 0xcd, 0xac, 0x87, 0xeb, 0x08, 0xfa, 0xd9, 0x82, 0xb7, 0x7d, 0xd3,
-	0x95, 0xa7, 0x84, 0x93, 0x90, 0x5e, 0x53, 0xae, 0x9f, 0xe5, 0xb9, 0xee, 0x9a, 0x5c, 0x67, 0x6f,
-	0xd6, 0x01, 0x6f, 0x63, 0x70, 0xfc, 0x77, 0x49, 0xd1, 0xfb, 0x70, 0x58, 0xb6, 0xe8, 0x05, 0x95,
-	0xca, 0xbc, 0xc5, 0x5e, 0xb7, 0xd6, 0x6f, 0xe0, 0x75, 0x00, 0xb5, 0xa1, 0x9e, 0x30, 0x4f, 0xa9,
-	0x73, 0x3c, 0xb1, 0xf7, 0x0d, 0x53, 0xcb, 0x33, 0xea, 0x43, 0x2b, 0x61, 0x43, 0xc2, 0x39, 0x95,
-	0x9e, 0xe0, 0x9a, 0x72, 0x6d, 0xb7, 0x8c, 0xc9, 0xaa, 0x3a, 0xa5, 0x7c, 0xa1, 0x4a, 0x03, 0x1d,
-	0x64, 0x94, 0xaf, 0xa8, 0xda, 0xbf, 0x5a, 0x70, 0xb4, 0x99, 0xc8, 0xe8, 0x00, 0x6a, 0x53, 0x3a,
-	0xcf, 0xbe, 0x60, 0x9c, 0x8a, 0x28, 0x80, 0x3b, 0x33, 0x12, 0x25, 0x34, 0xff, 0x68, 0xdf, 0x90,
-	0x42, 0xab, 0x69, 0x71, 0x16, 0xfc, 0xd3, 0xad, 0x4f, 0xac, 0xde, 0x05, 0xbc, 0xb5, 0x91, 0xe1,
-	0xa8, 0x03, 0xa0, 0x25, 0xf1, 0xa7, 0x8c, 0x87, 0xe3, 0x51, 0x5e, 0x5b, 0x45, 0x83, 0xee, 0xc3,
-	0x3e, 0xe1, 0x82, 0xcf, 0xd3, 0x66, 0x9e, 0x2b, 0x2a, 0x95, 0xa9, 0xb5, 0x8e, 0x57, 0xb4, 0xbd,
-	0xcf, 0x60, 0x3b, 0xe5, 0x21, 0xb2, 0x61, 0xd7, 0xbf, 0x22, 0xfa, 0xbc, 0x18, 0x55, 0xb8, 0x38,
-	0xa6, 0x2f, 0x90, 0x8a, 0x67, 0xf4, 0xa5, 0x36, 0x31, 0x1a, 0xb8, 0x3c, 0xf7, 0xee, 0xc1, 0x4e,
-	0xf6, 0xac, 0x08, 0xc1, 0x36, 0x27, 0xd7, 0x34, 0x77, 0x36, 0x72, 0xef, 0x73, 0x68, 0x94, 0x53,
-	0x0c, 0x0d, 0x00, 0x7c, 0xc1, 0x39, 0xf5, 0xb5, 0x90, 0xca, 0xb6, 0x0c, 0xf3, 0x6e, 0xa6, 0x9d,
-	0x57, 0x40, 0xb8, 0x62, 0xd5, 0x7b, 0x00, 0x8d, 0x12, 0xd8, 0x94, 0x21, 0xd5, 0xe9, 0x79, 0x4c,
-	0xf3, 0xba, 0x8c, 0xdc, 0xfb, 0xa9, 0x06, 0x95, 0xc9, 0xb7, 0xd1, 0xed, 0x08, 0x76, 0x98, 0x52,
-	0x09, 0x95, 0xb9, 0x63, 0x7e, 0x42, 0x7d, 0xa8, 0xfb, 0x11, 0xa3, 0x5c, 0x8f, 0x47, 0x66, 0xb8,
-	0x36, 0x86, 0x77, 0x97, 0x8b, 0xe3, 0xba, 0x97, 0xeb, 0x70, 0x89, 0xa2, 0x13, 0x68, 0xfa, 0x11,
-	0x2b, 0x80, 0x6c, 0x86, 0x0e, 0x5b, 0xcb, 0xc5, 0x71, 0xd3, 0x9b, 0x8c, 0x4b, 0xfb, 0xaa, 0x4d,
-	0x9a, 0x54, 0xf9, 0x22, 0xce, 0x27, 0x69, 0x03, 0xe7, 0x27, 0x74, 0x01, 0x7b, 0x2c, 0x38, 0x13,
-	0x53, 0xca, 0x3d, 0xb3, 0x55, 0xec, 0x1d, 0xd3, 0x9b, 0xfb, 0x1b, 0xc6, 0xba, 0x33, 0xae, 0x1a,
-	0x1a, 0x76, 0x0e, 0x0f, 0x97, 0x8b, 0xe3, 0xbd, 0xf1, 0xa8, 0xa2, 0xc7, 0xb7, 0xe3, 0xb5, 0xe7,
-	0x80, 0xd6, 0xfd, 0x36, 0xb0, 0xfa, 0xe9, 0x6d, 0x56, 0x7f, 0xfc, 0x8f, 0xac, 0xce, 0xd6, 0xa2,
-	0x53, 0xee, 0xf5, 0x74, 0xbf, 0x38, 0x26, 0x7e, 0x85, 0xbe, 0x83, 0xef, 0xa0, 0x55, 0xac, 0x89,
-	0xe7, 0x54, 0xce, 0x98, 0x4f, 0xd1, 0x57, 0x50, 0x7b, 0x44, 0x35, 0x3a, 0x5a, 0xdb, 0x23, 0x66,
-	0x77, 0xb6, 0x0f, 0xd7, 0xf4, 0x3d, 0xfb, 0xc7, 0xdf, 0xff, 0xfc, 0x65, 0x0b, 0xa1, 0x03, 0xf3,
-	0x3f, 0x30, 0x3b, 0x29, 0x77, 0xf1, 0xd0, 0x7b, 0xbd, 0xec, 0x58, 0xbf, 0x2d, 0x3b, 0xd6, 0x1f,
-	0xcb, 0x8e, 0xf5, 0xed, 0x47, 0xff, 0xed, 0xbf, 0x20, 0x7b, 0xc3, 0x32, 0xc8, 0xe5, 0x8e, 0xd9,
-	0xe2, 0x0f, 0xfe, 0x0a, 0x00, 0x00, 0xff, 0xff, 0x71, 0x4d, 0xb0, 0xe8, 0xb4, 0x08, 0x00, 0x00,
+	// 1293 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x56, 0xcd, 0x6e, 0x1b, 0xb7,
+	0x16, 0xc6, 0x44, 0x8e, 0x2d, 0x1d, 0xc7, 0x96, 0xcd, 0x38, 0xce, 0x44, 0x37, 0xd7, 0xd6, 0xd5,
+	0x22, 0xd0, 0xbd, 0xb8, 0x1d, 0xc5, 0x0a, 0x8a, 0x16, 0x41, 0x83, 0xd6, 0x92, 0x82, 0x44, 0x8d,
+	0x92, 0xb8, 0x4c, 0x9c, 0x45, 0x37, 0x01, 0x3d, 0xc3, 0x8e, 0xa6, 0x1e, 0x91, 0x03, 0x92, 0xa3,
+	0x46, 0x59, 0xf6, 0x01, 0xba, 0x69, 0x9f, 0xa6, 0xfb, 0xa2, 0x5d, 0x16, 0xe8, 0xde, 0x28, 0x84,
+	0x3e, 0x44, 0x97, 0x05, 0x39, 0x3f, 0x1e, 0x8f, 0xe4, 0xb4, 0x40, 0x76, 0xe4, 0xf7, 0x9d, 0x3f,
+	0x1e, 0x9e, 0x43, 0x1e, 0xd8, 0x93, 0x54, 0x4c, 0xa9, 0xe8, 0x48, 0xaa, 0x54, 0xc0, 0x7c, 0x99,
+	0x2f, 0x9c, 0x48, 0x70, 0xc5, 0xd1, 0x9a, 0x1b, 0xc6, 0x52, 0x51, 0xd1, 0xd8, 0xf1, 0xb9, 0xcf,
+	0x0d, 0xd6, 0xd1, 0xab, 0x84, 0x6e, 0xdc, 0xf6, 0x39, 0xf7, 0x43, 0xda, 0x21, 0x51, 0xd0, 0x21,
+	0x8c, 0x71, 0x45, 0x54, 0xc0, 0x59, 0xaa, 0xdc, 0x18, 0xf9, 0x81, 0x1a, 0xc7, 0x27, 0x8e, 0xcb,
+	0x27, 0x1d, 0x22, 0x8c, 0xfa, 0xd7, 0x66, 0xf1, 0x81, 0xeb, 0x75, 0xa6, 0xdd, 0x4e, 0x74, 0xea,
+	0x6b, 0x4d, 0xd9, 0x21, 0x51, 0x14, 0x06, 0xae, 0xd1, 0xed, 0x4c, 0x0f, 0x48, 0x18, 0x8d, 0xc9,
+	0x41, 0xc7, 0xa7, 0x8c, 0x0a, 0xa2, 0xa8, 0x97, 0x5a, 0xfb, 0xec, 0x6f, 0xac, 0x95, 0x4f, 0xc2,
+	0x03, 0xcf, 0xed, 0xb8, 0x21, 0x09, 0x26, 0x69, 0x3c, 0xad, 0x3a, 0x6c, 0xbc, 0x48, 0xd9, 0x2f,
+	0x62, 0x2a, 0x66, 0xad, 0x3f, 0xaf, 0x41, 0x35, 0x43, 0xd0, 0x2d, 0xa8, 0xc4, 0x22, 0xb4, 0xad,
+	0xa6, 0xd5, 0xae, 0xf5, 0xd6, 0xe6, 0x67, 0xfb, 0x95, 0x63, 0x3c, 0xc2, 0x1a, 0x43, 0x77, 0xa1,
+	0xe6, 0xd1, 0x37, 0x7d, 0xce, 0xbe, 0x0a, 0x7c, 0xfb, 0x4a, 0xd3, 0x6a, 0xaf, 0x77, 0x91, 0x93,
+	0x66, 0xc6, 0x19, 0x64, 0x0c, 0x3e, 0x17, 0x42, 0x7d, 0x00, 0xed, 0x3f, 0x55, 0xa9, 0x18, 0x95,
+	0xeb, 0xb9, 0xca, 0xf3, 0xe1, 0xa0, 0x9f, 0x50, 0xbd, 0xcd, 0xf9, 0xd9, 0x3e, 0x9c, 0xef, 0x71,
+	0x41, 0x0d, 0x35, 0x61, 0x9d, 0x44, 0xd1, 0x88, 0x9c, 0xd0, 0xf0, 0x09, 0x9d, 0xd9, 0x2b, 0x3a,
+	0x32, 0x5c, 0x84, 0xd0, 0x2b, 0xd8, 0x16, 0x54, 0xf2, 0x58, 0xb8, 0xf4, 0xf9, 0x94, 0x0a, 0x11,
+	0x78, 0x54, 0xda, 0x57, 0x9b, 0x95, 0xf6, 0x7a, 0xb7, 0x9d, 0x7b, 0xcb, 0x4e, 0xe8, 0xe0, 0xb2,
+	0xe8, 0x43, 0xa6, 0xc4, 0x0c, 0x2f, 0x9a, 0x40, 0x0e, 0x20, 0xa9, 0x88, 0x8a, 0x65, 0x8f, 0x78,
+	0x3e, 0x7d, 0xc8, 0xc8, 0x49, 0x48, 0x3d, 0x7b, 0xb5, 0x69, 0xb5, 0xab, 0x78, 0x09, 0x83, 0x1e,
+	0x43, 0x3d, 0xa9, 0x84, 0x43, 0x46, 0xc2, 0x99, 0x0a, 0x5c, 0x69, 0xaf, 0x99, 0x33, 0xef, 0xe5,
+	0x51, 0x3c, 0xba, 0xc8, 0xa7, 0xc7, 0x2d, 0xab, 0xa1, 0xb7, 0xb0, 0x75, 0x1a, 0x4b, 0xc5, 0x27,
+	0xc1, 0x5b, 0xfa, 0x3c, 0x32, 0xd5, 0x64, 0x57, 0x8d, 0xa9, 0x67, 0xce, 0x79, 0x01, 0x38, 0x59,
+	0x01, 0x98, 0xc5, 0x6b, 0xd7, 0x73, 0xa6, 0x5d, 0x27, 0x3a, 0xf5, 0x1d, 0x5d, 0x4e, 0x4e, 0xa1,
+	0x9c, 0x9c, 0xac, 0x9c, 0x9c, 0x27, 0x25, 0xab, 0x78, 0xc1, 0x0f, 0xfa, 0x0f, 0xac, 0x8c, 0x69,
+	0x18, 0xd9, 0x35, 0xe3, 0x6f, 0x23, 0x0f, 0xfd, 0x31, 0x0d, 0x23, 0x6c, 0x28, 0xf4, 0x5f, 0x58,
+	0x8b, 0xc2, 0xd8, 0x0f, 0x98, 0xb4, 0xc1, 0xa4, 0xb9, 0x9e, 0x4b, 0x1d, 0x19, 0x1c, 0x67, 0xbc,
+	0xce, 0x61, 0x2c, 0xa9, 0x18, 0x71, 0xbd, 0x1b, 0x04, 0x32, 0xc9, 0xe1, 0x7a, 0x92, 0xc3, 0x45,
+	0x06, 0x7d, 0x67, 0xc1, 0x4d, 0xd7, 0x64, 0xe5, 0x29, 0x61, 0xc4, 0xa7, 0x13, 0xca, 0xd4, 0x51,
+	0xea, 0xeb, 0x9a, 0xf1, 0xf5, 0xf2, 0xfd, 0x32, 0xd0, 0x5f, 0x6a, 0x1c, 0x5f, 0xe6, 0x14, 0xfd,
+	0x1f, 0xb6, 0xf3, 0x14, 0xbd, 0xa2, 0x42, 0x9a, 0xbb, 0xd8, 0x68, 0x56, 0xda, 0x35, 0xbc, 0x48,
+	0xa0, 0x06, 0x54, 0xe3, 0xa0, 0x2f, 0xe5, 0x31, 0x1e, 0xd9, 0x9b, 0xa6, 0x52, 0xf3, 0x3d, 0x6a,
+	0x43, 0x3d, 0x0e, 0x7a, 0x84, 0x31, 0x2a, 0xfa, 0x9c, 0x29, 0xca, 0x94, 0x5d, 0x37, 0x22, 0x65,
+	0x58, 0x97, 0x7c, 0x06, 0x69, 0x43, 0x5b, 0x49, 0xc9, 0x17, 0x20, 0x6d, 0x2b, 0x22, 0x52, 0x7e,
+	0xc3, 0x85, 0x77, 0x44, 0x94, 0xa2, 0x82, 0xd9, 0xdb, 0x89, 0xad, 0x12, 0x8c, 0xee, 0xc0, 0xa6,
+	0x12, 0xc4, 0x3d, 0x0d, 0x98, 0xff, 0x94, 0xaa, 0x31, 0xf7, 0x6c, 0x64, 0x04, 0x4b, 0xa8, 0x3e,
+	0x67, 0xe6, 0xe0, 0x88, 0x8a, 0x09, 0x61, 0x3a, 0xbe, 0xeb, 0xe6, 0x9e, 0x16, 0x09, 0xf4, 0x3f,
+	0xd8, 0xca, 0x41, 0x2e, 0x03, 0x9d, 0x62, 0x7b, 0xc7, 0xd8, 0x5d, 0xc0, 0x4b, 0x6d, 0x84, 0x39,
+	0x57, 0xc7, 0x22, 0xb4, 0x6f, 0x18, 0xe9, 0x25, 0x8c, 0x3e, 0x3d, 0x7d, 0x43, 0xdd, 0xac, 0xdf,
+	0x76, 0x4d, 0x0c, 0x45, 0x08, 0xdd, 0x85, 0xeb, 0x2e, 0x67, 0x4a, 0xf0, 0x30, 0xa4, 0xe2, 0x19,
+	0x99, 0x50, 0x19, 0x11, 0x97, 0xda, 0x37, 0x8d, 0xc9, 0x65, 0x14, 0xfa, 0x04, 0x6e, 0x91, 0x28,
+	0x92, 0x43, 0x76, 0xc8, 0x66, 0x39, 0x9a, 0x79, 0xb0, 0x8d, 0x87, 0xcb, 0x05, 0x50, 0x17, 0x76,
+	0x82, 0x49, 0x44, 0x85, 0xe4, 0xcc, 0x54, 0x53, 0xa6, 0x78, 0xcb, 0x28, 0x2e, 0xe5, 0x74, 0xde,
+	0x03, 0x26, 0x15, 0x09, 0x43, 0x03, 0x0f, 0x07, 0x76, 0x23, 0xc9, 0xfb, 0x45, 0x14, 0xdd, 0x87,
+	0x4d, 0xe2, 0x79, 0x26, 0x53, 0x24, 0x3c, 0x16, 0xa1, 0xb4, 0xff, 0xa5, 0x8b, 0xab, 0x87, 0xe6,
+	0x67, 0xfb, 0x9b, 0x87, 0xe7, 0x0c, 0x1e, 0x49, 0x5c, 0x92, 0xd4, 0x55, 0x30, 0x9e, 0x79, 0x82,
+	0x28, 0x2e, 0xb2, 0x90, 0x6e, 0x9b, 0x90, 0xca, 0x70, 0xe3, 0x07, 0x0b, 0x76, 0x97, 0x3f, 0x7c,
+	0x68, 0x0b, 0x2a, 0xa7, 0x74, 0x96, 0xbc, 0xf8, 0x58, 0x2f, 0x91, 0x07, 0x57, 0xa7, 0x24, 0x8c,
+	0x69, 0xfa, 0xc8, 0xbf, 0xe7, 0x93, 0x53, 0x76, 0x8b, 0x13, 0xe3, 0xf7, 0xaf, 0x7c, 0x6c, 0xb5,
+	0x5e, 0xc3, 0x8d, 0xa5, 0x2f, 0x22, 0xda, 0x03, 0xc8, 0xea, 0x73, 0x38, 0x48, 0x63, 0x2b, 0x20,
+	0x3a, 0xbb, 0x84, 0x71, 0x36, 0xd3, 0xcd, 0x77, 0x2c, 0xa9, 0x90, 0x26, 0xd6, 0x2a, 0x2e, 0xa1,
+	0xad, 0x01, 0xdc, 0xcc, 0x1e, 0xfe, 0xb4, 0xa1, 0x31, 0x95, 0x11, 0x67, 0x92, 0x16, 0x1f, 0x31,
+	0xeb, 0xdd, 0x8f, 0x58, 0xeb, 0x47, 0x0b, 0x56, 0xf4, 0xf3, 0x87, 0x6c, 0x58, 0x73, 0xc7, 0xc4,
+	0xd4, 0x6f, 0x12, 0x53, 0xb6, 0xd5, 0x8d, 0xaf, 0x97, 0x2f, 0xe9, 0x1b, 0x65, 0x42, 0xa9, 0xe1,
+	0x7c, 0x8f, 0x1e, 0x00, 0x9c, 0x04, 0x8c, 0x88, 0x99, 0xb9, 0xde, 0x8a, 0x71, 0xf6, 0xef, 0x0b,
+	0xef, 0xaa, 0xd3, 0xcb, 0xf9, 0xe4, 0x37, 0x2a, 0x28, 0x34, 0x1e, 0x40, 0xbd, 0x44, 0x2f, 0xb9,
+	0xb3, 0x9d, 0xe2, 0x9d, 0xd5, 0x8a, 0x39, 0xbe, 0x0d, 0xab, 0xc9, 0x79, 0x10, 0x82, 0x15, 0x46,
+	0x26, 0x34, 0x55, 0x33, 0xeb, 0xd6, 0xa7, 0x50, 0xcb, 0xbf, 0x6e, 0xd4, 0x05, 0x70, 0x39, 0x63,
+	0xd4, 0x55, 0x5c, 0x64, 0x59, 0x39, 0xff, 0xe2, 0xfb, 0x19, 0x85, 0x0b, 0x52, 0xad, 0x7b, 0x50,
+	0xcb, 0x89, 0x65, 0x1e, 0x34, 0xa6, 0x66, 0x51, 0x16, 0x98, 0x59, 0xb7, 0x7e, 0xaa, 0x40, 0xe1,
+	0xbb, 0x5f, 0xaa, 0xb6, 0x0b, 0xab, 0x81, 0x94, 0x31, 0x15, 0xa9, 0x62, 0xba, 0x43, 0x6d, 0xa8,
+	0xba, 0x61, 0x40, 0x99, 0x1a, 0x0e, 0xcc, 0x44, 0x51, 0xeb, 0x5d, 0x9b, 0x9f, 0xed, 0x57, 0xfb,
+	0x29, 0x86, 0x73, 0x16, 0x1d, 0xc0, 0xba, 0x1b, 0x06, 0x19, 0x91, 0x0c, 0x0e, 0xbd, 0xfa, 0xfc,
+	0x6c, 0x7f, 0xbd, 0x3f, 0x1a, 0xe6, 0xf2, 0x45, 0x19, 0xed, 0x54, 0xba, 0x3c, 0x4a, 0xc7, 0x87,
+	0x1a, 0x4e, 0x77, 0xe8, 0x35, 0x6c, 0x04, 0xde, 0x4b, 0x7e, 0x4a, 0x59, 0xdf, 0x8c, 0x52, 0xf6,
+	0xaa, 0xc9, 0xcd, 0x9d, 0x25, 0xb3, 0x8c, 0x33, 0x2c, 0x0a, 0x9a, 0xeb, 0xea, 0x6d, 0xcf, 0xcf,
+	0xf6, 0x37, 0x86, 0x83, 0x02, 0x8e, 0x2f, 0xda, 0x43, 0xf7, 0xc1, 0xa6, 0xa6, 0x55, 0x8f, 0x9e,
+	0xf4, 0x1f, 0x1e, 0xc6, 0x6a, 0x4c, 0x99, 0x4a, 0x3b, 0xc9, 0xcc, 0x10, 0x55, 0x7c, 0x29, 0xdf,
+	0x98, 0x01, 0x5a, 0xf4, 0xb9, 0xa4, 0x44, 0x9e, 0x5e, 0x6c, 0xeb, 0x8f, 0xde, 0xd9, 0xd6, 0xc9,
+	0x1c, 0xe9, 0xe4, 0x83, 0xb0, 0x1e, 0xc8, 0x1c, 0x63, 0xbf, 0x50, 0x5b, 0xdd, 0x9f, 0x2d, 0xa8,
+	0x67, 0xfd, 0xf5, 0x82, 0x8a, 0x69, 0xe0, 0x52, 0xf4, 0x39, 0x54, 0x1e, 0x51, 0x85, 0x76, 0x17,
+	0x26, 0x2f, 0x33, 0x6d, 0x36, 0xb6, 0x17, 0xf0, 0x96, 0xfd, 0xed, 0x6f, 0x7f, 0x7c, 0x7f, 0x05,
+	0xa1, 0x2d, 0x33, 0x41, 0x4f, 0x0f, 0xf2, 0xe9, 0x15, 0x8d, 0x01, 0x1e, 0xd1, 0xfc, 0x2b, 0xbe,
+	0xcc, 0x64, 0x73, 0x01, 0x2f, 0xf5, 0x7a, 0xab, 0x69, 0x3c, 0x34, 0x90, 0x5d, 0xf6, 0xd0, 0x49,
+	0x5b, 0xbc, 0xd7, 0xff, 0x65, 0xbe, 0x67, 0xfd, 0x3a, 0xdf, 0xb3, 0x7e, 0x9f, 0xef, 0x59, 0x5f,
+	0x7e, 0xf8, 0xcf, 0x66, 0xf6, 0xa4, 0xd4, 0x72, 0x63, 0x27, 0xab, 0x66, 0xc2, 0xbe, 0xf7, 0x57,
+	0x00, 0x00, 0x00, 0xff, 0xff, 0x57, 0xdb, 0xcf, 0xcf, 0x50, 0x0c, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -687,6 +870,8 @@ const _ = grpc.SupportPackageIsVersion4
 type SettingsServiceClient interface {
 	// Get returns Argo CD settings
 	Get(ctx context.Context, in *SettingsQuery, opts ...grpc.CallOption) (*Settings, error)
+	// Get returns Argo CD plugins
+	GetPlugins(ctx context.Context, in *SettingsQuery, opts ...grpc.CallOption) (*SettingsPluginsResponse, error)
 }
 
 type settingsServiceClient struct {
@@ -706,10 +891,21 @@ func (c *settingsServiceClient) Get(ctx context.Context, in *SettingsQuery, opts
 	return out, nil
 }
 
+func (c *settingsServiceClient) GetPlugins(ctx context.Context, in *SettingsQuery, opts ...grpc.CallOption) (*SettingsPluginsResponse, error) {
+	out := new(SettingsPluginsResponse)
+	err := c.cc.Invoke(ctx, "/cluster.SettingsService/GetPlugins", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // SettingsServiceServer is the server API for SettingsService service.
 type SettingsServiceServer interface {
 	// Get returns Argo CD settings
 	Get(context.Context, *SettingsQuery) (*Settings, error)
+	// Get returns Argo CD plugins
+	GetPlugins(context.Context, *SettingsQuery) (*SettingsPluginsResponse, error)
 }
 
 // UnimplementedSettingsServiceServer can be embedded to have forward compatible implementations.
@@ -718,6 +914,9 @@ type UnimplementedSettingsServiceServer struct {
 
 func (*UnimplementedSettingsServiceServer) Get(ctx context.Context, req *SettingsQuery) (*Settings, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
+}
+func (*UnimplementedSettingsServiceServer) GetPlugins(ctx context.Context, req *SettingsQuery) (*SettingsPluginsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPlugins not implemented")
 }
 
 func RegisterSettingsServiceServer(s *grpc.Server, srv SettingsServiceServer) {
@@ -742,6 +941,24 @@ func _SettingsService_Get_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SettingsService_GetPlugins_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SettingsQuery)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SettingsServiceServer).GetPlugins(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/cluster.SettingsService/GetPlugins",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SettingsServiceServer).GetPlugins(ctx, req.(*SettingsQuery))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _SettingsService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "cluster.SettingsService",
 	HandlerType: (*SettingsServiceServer)(nil),
@@ -749,6 +966,10 @@ var _SettingsService_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Get",
 			Handler:    _SettingsService_Get_Handler,
+		},
+		{
+			MethodName: "GetPlugins",
+			Handler:    _SettingsService_GetPlugins_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -805,6 +1026,131 @@ func (m *Settings) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	if m.XXX_unrecognized != nil {
 		i -= len(m.XXX_unrecognized)
 		copy(dAtA[i:], m.XXX_unrecognized)
+	}
+	if m.HydratorEnabled {
+		i--
+		if m.HydratorEnabled {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0xe0
+	}
+	if len(m.AdditionalURLs) > 0 {
+		for iNdEx := len(m.AdditionalURLs) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.AdditionalURLs[iNdEx])
+			copy(dAtA[i:], m.AdditionalURLs[iNdEx])
+			i = encodeVarintSettings(dAtA, i, uint64(len(m.AdditionalURLs[iNdEx])))
+			i--
+			dAtA[i] = 0x1
+			i--
+			dAtA[i] = 0xda
+		}
+	}
+	if len(m.InstallationID) > 0 {
+		i -= len(m.InstallationID)
+		copy(dAtA[i:], m.InstallationID)
+		i = encodeVarintSettings(dAtA, i, uint64(len(m.InstallationID)))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0xd2
+	}
+	if m.ImpersonationEnabled {
+		i--
+		if m.ImpersonationEnabled {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0xc8
+	}
+	if m.AppsInAnyNamespaceEnabled {
+		i--
+		if m.AppsInAnyNamespaceEnabled {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0xc0
+	}
+	if len(m.ControllerNamespace) > 0 {
+		i -= len(m.ControllerNamespace)
+		copy(dAtA[i:], m.ControllerNamespace)
+		i = encodeVarintSettings(dAtA, i, uint64(len(m.ControllerNamespace)))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0xba
+	}
+	if m.ExecEnabled {
+		i--
+		if m.ExecEnabled {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0xb0
+	}
+	if len(m.StatusBadgeRootUrl) > 0 {
+		i -= len(m.StatusBadgeRootUrl)
+		copy(dAtA[i:], m.StatusBadgeRootUrl)
+		i = encodeVarintSettings(dAtA, i, uint64(len(m.StatusBadgeRootUrl)))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0xaa
+	}
+	if len(m.UiBannerPosition) > 0 {
+		i -= len(m.UiBannerPosition)
+		copy(dAtA[i:], m.UiBannerPosition)
+		i = encodeVarintSettings(dAtA, i, uint64(len(m.UiBannerPosition)))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0xa2
+	}
+	if m.UiBannerPermanent {
+		i--
+		if m.UiBannerPermanent {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0x98
+	}
+	if len(m.TrackingMethod) > 0 {
+		i -= len(m.TrackingMethod)
+		copy(dAtA[i:], m.TrackingMethod)
+		i = encodeVarintSettings(dAtA, i, uint64(len(m.TrackingMethod)))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0x92
+	}
+	if len(m.PasswordPattern) > 0 {
+		i -= len(m.PasswordPattern)
+		copy(dAtA[i:], m.PasswordPattern)
+		i = encodeVarintSettings(dAtA, i, uint64(len(m.PasswordPattern)))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0x8a
 	}
 	if len(m.UiBannerURL) > 0 {
 		i -= len(m.UiBannerURL)
@@ -1033,6 +1379,47 @@ func (m *GoogleAnalyticsConfig) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *SettingsPluginsResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *SettingsPluginsResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *SettingsPluginsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.XXX_unrecognized != nil {
+		i -= len(m.XXX_unrecognized)
+		copy(dAtA[i:], m.XXX_unrecognized)
+	}
+	if len(m.Plugins) > 0 {
+		for iNdEx := len(m.Plugins) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Plugins[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintSettings(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
 func (m *Help) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -1056,6 +1443,25 @@ func (m *Help) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	if m.XXX_unrecognized != nil {
 		i -= len(m.XXX_unrecognized)
 		copy(dAtA[i:], m.XXX_unrecognized)
+	}
+	if len(m.BinaryUrls) > 0 {
+		for k := range m.BinaryUrls {
+			v := m.BinaryUrls[k]
+			baseI := i
+			i -= len(v)
+			copy(dAtA[i:], v)
+			i = encodeVarintSettings(dAtA, i, uint64(len(v)))
+			i--
+			dAtA[i] = 0x12
+			i -= len(k)
+			copy(dAtA[i:], k)
+			i = encodeVarintSettings(dAtA, i, uint64(len(k)))
+			i--
+			dAtA[i] = 0xa
+			i = encodeVarintSettings(dAtA, i, uint64(baseI-i))
+			i--
+			dAtA[i] = 0x1a
+		}
 	}
 	if len(m.ChatText) > 0 {
 		i -= len(m.ChatText)
@@ -1213,6 +1619,16 @@ func (m *OIDCConfig) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	if m.XXX_unrecognized != nil {
 		i -= len(m.XXX_unrecognized)
 		copy(dAtA[i:], m.XXX_unrecognized)
+	}
+	if m.EnablePKCEAuthentication {
+		i--
+		if m.EnablePKCEAuthentication {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x38
 	}
 	if len(m.IDTokenClaims) > 0 {
 		for k := range m.IDTokenClaims {
@@ -1386,6 +1802,51 @@ func (m *Settings) Size() (n int) {
 	if l > 0 {
 		n += 2 + l + sovSettings(uint64(l))
 	}
+	l = len(m.PasswordPattern)
+	if l > 0 {
+		n += 2 + l + sovSettings(uint64(l))
+	}
+	l = len(m.TrackingMethod)
+	if l > 0 {
+		n += 2 + l + sovSettings(uint64(l))
+	}
+	if m.UiBannerPermanent {
+		n += 3
+	}
+	l = len(m.UiBannerPosition)
+	if l > 0 {
+		n += 2 + l + sovSettings(uint64(l))
+	}
+	l = len(m.StatusBadgeRootUrl)
+	if l > 0 {
+		n += 2 + l + sovSettings(uint64(l))
+	}
+	if m.ExecEnabled {
+		n += 3
+	}
+	l = len(m.ControllerNamespace)
+	if l > 0 {
+		n += 2 + l + sovSettings(uint64(l))
+	}
+	if m.AppsInAnyNamespaceEnabled {
+		n += 3
+	}
+	if m.ImpersonationEnabled {
+		n += 3
+	}
+	l = len(m.InstallationID)
+	if l > 0 {
+		n += 2 + l + sovSettings(uint64(l))
+	}
+	if len(m.AdditionalURLs) > 0 {
+		for _, s := range m.AdditionalURLs {
+			l = len(s)
+			n += 2 + l + sovSettings(uint64(l))
+		}
+	}
+	if m.HydratorEnabled {
+		n += 3
+	}
 	if m.XXX_unrecognized != nil {
 		n += len(m.XXX_unrecognized)
 	}
@@ -1411,6 +1872,24 @@ func (m *GoogleAnalyticsConfig) Size() (n int) {
 	return n
 }
 
+func (m *SettingsPluginsResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.Plugins) > 0 {
+		for _, e := range m.Plugins {
+			l = e.Size()
+			n += 1 + l + sovSettings(uint64(l))
+		}
+	}
+	if m.XXX_unrecognized != nil {
+		n += len(m.XXX_unrecognized)
+	}
+	return n
+}
+
 func (m *Help) Size() (n int) {
 	if m == nil {
 		return 0
@@ -1424,6 +1903,14 @@ func (m *Help) Size() (n int) {
 	l = len(m.ChatText)
 	if l > 0 {
 		n += 1 + l + sovSettings(uint64(l))
+	}
+	if len(m.BinaryUrls) > 0 {
+		for k, v := range m.BinaryUrls {
+			_ = k
+			_ = v
+			mapEntrySize := 1 + len(k) + sovSettings(uint64(len(k))) + 1 + len(v) + sovSettings(uint64(len(v)))
+			n += mapEntrySize + 1 + sovSettings(uint64(mapEntrySize))
+		}
 	}
 	if m.XXX_unrecognized != nil {
 		n += len(m.XXX_unrecognized)
@@ -1525,6 +2012,9 @@ func (m *OIDCConfig) Size() (n int) {
 			mapEntrySize := 1 + len(k) + sovSettings(uint64(len(k))) + l
 			n += mapEntrySize + 1 + sovSettings(uint64(mapEntrySize))
 		}
+	}
+	if m.EnablePKCEAuthentication {
+		n += 2
 	}
 	if m.XXX_unrecognized != nil {
 		n += len(m.XXX_unrecognized)
@@ -2227,6 +2717,330 @@ func (m *Settings) Unmarshal(dAtA []byte) error {
 			}
 			m.UiBannerURL = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 17:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PasswordPattern", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowSettings
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthSettings
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthSettings
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.PasswordPattern = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 18:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TrackingMethod", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowSettings
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthSettings
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthSettings
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.TrackingMethod = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 19:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field UiBannerPermanent", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowSettings
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.UiBannerPermanent = bool(v != 0)
+		case 20:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field UiBannerPosition", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowSettings
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthSettings
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthSettings
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.UiBannerPosition = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 21:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field StatusBadgeRootUrl", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowSettings
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthSettings
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthSettings
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.StatusBadgeRootUrl = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 22:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ExecEnabled", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowSettings
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.ExecEnabled = bool(v != 0)
+		case 23:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ControllerNamespace", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowSettings
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthSettings
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthSettings
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ControllerNamespace = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 24:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AppsInAnyNamespaceEnabled", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowSettings
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.AppsInAnyNamespaceEnabled = bool(v != 0)
+		case 25:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ImpersonationEnabled", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowSettings
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.ImpersonationEnabled = bool(v != 0)
+		case 26:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field InstallationID", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowSettings
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthSettings
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthSettings
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.InstallationID = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 27:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AdditionalURLs", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowSettings
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthSettings
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthSettings
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.AdditionalURLs = append(m.AdditionalURLs, string(dAtA[iNdEx:postIndex]))
+			iNdEx = postIndex
+		case 28:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field HydratorEnabled", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowSettings
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.HydratorEnabled = bool(v != 0)
 		default:
 			iNdEx = preIndex
 			skippy, err := skipSettings(dAtA[iNdEx:])
@@ -2352,6 +3166,91 @@ func (m *GoogleAnalyticsConfig) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+func (m *SettingsPluginsResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowSettings
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: SettingsPluginsResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: SettingsPluginsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Plugins", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowSettings
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthSettings
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthSettings
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Plugins = append(m.Plugins, &Plugin{})
+			if err := m.Plugins[len(m.Plugins)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipSettings(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthSettings
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
 func (m *Help) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -2444,6 +3343,133 @@ func (m *Help) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.ChatText = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BinaryUrls", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowSettings
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthSettings
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthSettings
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.BinaryUrls == nil {
+				m.BinaryUrls = make(map[string]string)
+			}
+			var mapkey string
+			var mapvalue string
+			for iNdEx < postIndex {
+				entryPreIndex := iNdEx
+				var wire uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowSettings
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					wire |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				fieldNum := int32(wire >> 3)
+				if fieldNum == 1 {
+					var stringLenmapkey uint64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowSettings
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						stringLenmapkey |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					intStringLenmapkey := int(stringLenmapkey)
+					if intStringLenmapkey < 0 {
+						return ErrInvalidLengthSettings
+					}
+					postStringIndexmapkey := iNdEx + intStringLenmapkey
+					if postStringIndexmapkey < 0 {
+						return ErrInvalidLengthSettings
+					}
+					if postStringIndexmapkey > l {
+						return io.ErrUnexpectedEOF
+					}
+					mapkey = string(dAtA[iNdEx:postStringIndexmapkey])
+					iNdEx = postStringIndexmapkey
+				} else if fieldNum == 2 {
+					var stringLenmapvalue uint64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowSettings
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						stringLenmapvalue |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					intStringLenmapvalue := int(stringLenmapvalue)
+					if intStringLenmapvalue < 0 {
+						return ErrInvalidLengthSettings
+					}
+					postStringIndexmapvalue := iNdEx + intStringLenmapvalue
+					if postStringIndexmapvalue < 0 {
+						return ErrInvalidLengthSettings
+					}
+					if postStringIndexmapvalue > l {
+						return io.ErrUnexpectedEOF
+					}
+					mapvalue = string(dAtA[iNdEx:postStringIndexmapvalue])
+					iNdEx = postStringIndexmapvalue
+				} else {
+					iNdEx = entryPreIndex
+					skippy, err := skipSettings(dAtA[iNdEx:])
+					if err != nil {
+						return err
+					}
+					if (skippy < 0) || (iNdEx+skippy) < 0 {
+						return ErrInvalidLengthSettings
+					}
+					if (iNdEx + skippy) > postIndex {
+						return io.ErrUnexpectedEOF
+					}
+					iNdEx += skippy
+				}
+			}
+			m.BinaryUrls[mapkey] = mapvalue
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -3068,6 +4094,26 @@ func (m *OIDCConfig) Unmarshal(dAtA []byte) error {
 			}
 			m.IDTokenClaims[mapkey] = mapvalue
 			iNdEx = postIndex
+		case 7:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field EnablePKCEAuthentication", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowSettings
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.EnablePKCEAuthentication = bool(v != 0)
 		default:
 			iNdEx = preIndex
 			skippy, err := skipSettings(dAtA[iNdEx:])

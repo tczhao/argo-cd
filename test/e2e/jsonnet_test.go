@@ -6,6 +6,7 @@ import (
 	. "github.com/argoproj/gitops-engine/pkg/sync/common"
 	"github.com/argoproj/gitops-engine/pkg/utils/kube"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	. "github.com/argoproj/argo-cd/v2/pkg/apis/application/v1alpha1"
 	. "github.com/argoproj/argo-cd/v2/test/e2e/fixture"
@@ -17,15 +18,15 @@ func TestJsonnetAppliedCorrectly(t *testing.T) {
 	Given(t).
 		Path("jsonnet-tla").
 		When().
-		Create().
+		CreateApp().
 		Sync().
 		Then().
 		Expect(SyncStatusIs(SyncStatusCodeSynced)).
 		And(func(app *Application) {
 			manifests, err := RunCli("app", "manifests", app.Name, "--source", "live")
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			resources, err := kube.SplitYAML([]byte(manifests))
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			index := -1
 			for i := range resources {
@@ -35,7 +36,7 @@ func TestJsonnetAppliedCorrectly(t *testing.T) {
 				}
 			}
 
-			assert.True(t, index > -1)
+			assert.Greater(t, index, -1)
 
 			deployment := resources[index]
 			assert.Equal(t, "jsonnet-guestbook-ui", deployment.GetName())
@@ -47,15 +48,15 @@ func TestJsonnetTlaParameterAppliedCorrectly(t *testing.T) {
 	Given(t).
 		Path("jsonnet-tla").
 		When().
-		Create("--jsonnet-tla-str", "name=testing-tla", "--jsonnet-tla-code", "replicas=0").
+		CreateApp("--jsonnet-tla-str", "name=testing-tla", "--jsonnet-tla-code", "replicas=0").
 		Sync().
 		Then().
 		Expect(SyncStatusIs(SyncStatusCodeSynced)).
 		And(func(app *Application) {
 			manifests, err := RunCli("app", "manifests", app.Name, "--source", "live")
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			resources, err := kube.SplitYAML([]byte(manifests))
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			index := -1
 			for i := range resources {
@@ -65,7 +66,7 @@ func TestJsonnetTlaParameterAppliedCorrectly(t *testing.T) {
 				}
 			}
 
-			assert.True(t, index > -1)
+			assert.Greater(t, index, -1)
 
 			deployment := resources[index]
 			assert.Equal(t, "testing-tla", deployment.GetName())
@@ -77,21 +78,7 @@ func TestJsonnetTlaEnv(t *testing.T) {
 	Given(t).
 		Path("jsonnet-tla-cm").
 		When().
-		Create("--jsonnet-tla-str", "foo=$ARGOCD_APP_NAME", "--jsonnet-tla-code", "bar='$ARGOCD_APP_NAME'").
-		Sync().
-		Then().
-		Expect(OperationPhaseIs(OperationSucceeded)).
-		Expect(SyncStatusIs(SyncStatusCodeSynced)).
-		And(func(app *Application) {
-			assert.Equal(t, Name(), FailOnErr(Run(".", "kubectl", "-n", DeploymentNamespace(), "get", "cm", "my-map", "-o", "jsonpath={.data.foo}")).(string))
-			assert.Equal(t, Name(), FailOnErr(Run(".", "kubectl", "-n", DeploymentNamespace(), "get", "cm", "my-map", "-o", "jsonpath={.data.bar}")).(string))
-		})
-}
-func TestJsonnetExtVarEnv(t *testing.T) {
-	Given(t).
-		Path("jsonnet-ext-var").
-		When().
-		Create("--jsonnet-ext-var-str", "foo=$ARGOCD_APP_NAME", "--jsonnet-ext-var-code", "bar='$ARGOCD_APP_NAME'").
+		CreateApp("--jsonnet-tla-str", "foo=$ARGOCD_APP_NAME", "--jsonnet-tla-code", "bar='$ARGOCD_APP_NAME'").
 		Sync().
 		Then().
 		Expect(OperationPhaseIs(OperationSucceeded)).
@@ -102,12 +89,27 @@ func TestJsonnetExtVarEnv(t *testing.T) {
 		})
 }
 
-//Jsonnet file located in nested sub directory uses import
+func TestJsonnetExtVarEnv(t *testing.T) {
+	Given(t).
+		Path("jsonnet-ext-var").
+		When().
+		CreateApp("--jsonnet-ext-var-str", "foo=$ARGOCD_APP_NAME", "--jsonnet-ext-var-code", "bar='$ARGOCD_APP_NAME'").
+		Sync().
+		Then().
+		Expect(OperationPhaseIs(OperationSucceeded)).
+		Expect(SyncStatusIs(SyncStatusCodeSynced)).
+		And(func(app *Application) {
+			assert.Equal(t, Name(), FailOnErr(Run(".", "kubectl", "-n", DeploymentNamespace(), "get", "cm", "my-map", "-o", "jsonpath={.data.foo}")).(string))
+			assert.Equal(t, Name(), FailOnErr(Run(".", "kubectl", "-n", DeploymentNamespace(), "get", "cm", "my-map", "-o", "jsonpath={.data.bar}")).(string))
+		})
+}
+
+// Jsonnet file located in nested sub directory uses import
 func TestJsonnetNestedDirWithImports(t *testing.T) {
 	Given(t).
 		Path("jsonnet-nested-dir-with-imports/apps").
 		When().
-		Create("--directory-recurse").
+		CreateApp("--directory-recurse").
 		Sync().
 		Then().
 		Expect(OperationPhaseIs(OperationSucceeded)).

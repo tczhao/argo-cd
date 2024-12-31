@@ -2,13 +2,12 @@ package logout
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"regexp"
 	"strings"
 	"time"
 
-	"github.com/dgrijalva/jwt-go/v4"
+	"github.com/golang-jwt/jwt/v4"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/argoproj/argo-cd/v2/common"
@@ -19,13 +18,14 @@ import (
 	"github.com/argoproj/argo-cd/v2/util/settings"
 )
 
-//NewHandler creates handler serving to do api/logout endpoint
-func NewHandler(appClientset versioned.Interface, settingsMrg *settings.SettingsManager, sessionMgr *session.SessionManager, rootPath, namespace string) *Handler {
+// NewHandler creates handler serving to do api/logout endpoint
+func NewHandler(appClientset versioned.Interface, settingsMrg *settings.SettingsManager, sessionMgr *session.SessionManager, rootPath, baseHRef, namespace string) *Handler {
 	return &Handler{
 		appClientset: appClientset,
 		namespace:    namespace,
 		settingsMgr:  settingsMrg,
 		rootPath:     rootPath,
+		baseHRef:     baseHRef,
 		verifyToken:  sessionMgr.VerifyToken,
 		revokeToken:  sessionMgr.RevokeToken,
 	}
@@ -38,6 +38,7 @@ type Handler struct {
 	rootPath     string
 	verifyToken  func(tokenString string) (jwt.Claims, string, error)
 	revokeToken  func(ctx context.Context, id string, expiringAt time.Duration) error
+	baseHRef     string
 }
 
 var (
@@ -59,15 +60,19 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	argoCDSettings, err := h.settingsMgr.GetSettings()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		http.Error(w, "Failed to retrieve argoCD settings: "+fmt.Sprintf("%s", err), http.StatusInternalServerError)
+		http.Error(w, "Failed to retrieve argoCD settings: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	argoURL := argoCDSettings.URL
+	argoURL, err := argoCDSettings.ArgoURLForRequest(r)
+	if err != nil {
+		log.Warnf("unable to find ArgoCD URL from config: %v", err)
+	}
 	if argoURL == "" {
 		// golang does not provide any easy way to determine scheme of current request
 		// so redirecting ot http which will auto-redirect too https if necessary
-		argoURL = fmt.Sprintf("http://%s", r.Host) + strings.TrimRight(strings.TrimLeft(h.rootPath, "/"), "/")
+		host := strings.TrimRight(r.Host, "/")
+		argoURL = "http://" + host + "/" + strings.TrimRight(strings.TrimLeft(h.rootPath, "/"), "/")
 	}
 
 	logoutRedirectURL := strings.TrimRight(strings.TrimLeft(argoURL, "/"), "/")
@@ -76,7 +81,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	tokenString, err = httputil.JoinCookies(common.AuthCookieName, cookies)
 	if tokenString == "" || err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		http.Error(w, "Failed to retrieve ArgoCD auth token: "+fmt.Sprintf("%s", err), http.StatusBadRequest)
+		http.Error(w, "Failed to retrieve ArgoCD auth token: "+err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -84,11 +89,13 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		if !strings.HasPrefix(cookie.Name, common.AuthCookieName) {
 			continue
 		}
+
 		argocdCookie := http.Cookie{
 			Name:  cookie.Name,
 			Value: "",
 		}
-		argocdCookie.Path = fmt.Sprintf("/%s", strings.TrimRight(strings.TrimLeft(h.rootPath, "/"), "/"))
+
+		argocdCookie.Path = "/" + strings.TrimRight(strings.TrimLeft(h.baseHRef, "/"), "/")
 		w.Header().Add("Set-Cookie", argocdCookie.String())
 	}
 

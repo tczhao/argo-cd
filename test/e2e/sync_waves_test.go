@@ -6,9 +6,12 @@ import (
 	. "github.com/argoproj/argo-cd/v2/pkg/apis/application/v1alpha1"
 	. "github.com/argoproj/argo-cd/v2/test/e2e/fixture"
 	. "github.com/argoproj/argo-cd/v2/test/e2e/fixture/app"
+	"github.com/argoproj/argo-cd/v2/util/errors"
 
 	"github.com/argoproj/gitops-engine/pkg/health"
 	. "github.com/argoproj/gitops-engine/pkg/sync/common"
+
+	v1 "k8s.io/api/core/v1"
 )
 
 func TestFixingDegradedApp(t *testing.T) {
@@ -16,13 +19,13 @@ func TestFixingDegradedApp(t *testing.T) {
 		Path("sync-waves").
 		When().
 		IgnoreErrors().
-		Create().
+		CreateApp().
 		And(func() {
-			SetResourceOverrides(map[string]ResourceOverride{
+			errors.CheckError(SetResourceOverrides(map[string]ResourceOverride{
 				"ConfigMap": {
 					HealthLua: `return { status = obj.metadata.annotations and obj.metadata.annotations['health'] or 'Degraded' }`,
 				},
-			})
+			}))
 		}).
 		Sync().
 		Then().
@@ -66,7 +69,7 @@ func TestOneProgressingDeploymentIsSucceededAndSynced(t *testing.T) {
         "value": "alpine:ops!"
     }
 ]`).
-		Create().
+		CreateApp().
 		Sync().
 		Then().
 		Expect(OperationPhaseIs(OperationSucceeded)).
@@ -92,11 +95,54 @@ func TestDegradedDeploymentIsSucceededAndSynced(t *testing.T) {
         "value": "alpine:ops!"
     }
 ]`).
-		Create().
+		CreateApp().
 		Sync().
 		Then().
 		Expect(OperationPhaseIs(OperationSucceeded)).
 		Expect(HealthIs(health.HealthStatusDegraded)).
 		Expect(SyncStatusIs(SyncStatusCodeSynced)).
 		Expect(ResourceResultNumbering(1))
+}
+
+// resources should be pruned in reverse of creation order(syncwaves order)
+func TestSyncPruneOrderWithSyncWaves(t *testing.T) {
+	ctx := Given(t).Timeout(60)
+
+	// remove finalizer to ensure proper cleanup if test fails at early stage
+	defer func() {
+		_, _ = RunCli("app", "patch-resource", ctx.AppQualifiedName(),
+			"--kind", "Pod",
+			"--resource-name", "pod-with-finalizers",
+			"--patch", `[{"op": "remove", "path": "/metadata/finalizers"}]`,
+			"--patch-type", "application/json-patch+json", "--all",
+		)
+	}()
+
+	ctx.Path("syncwaves-prune-order").
+		When().
+		CreateApp().
+		// creation order: sa & role -> rolebinding -> pod
+		Sync().
+		Wait().
+		Then().
+		Expect(SyncStatusIs(SyncStatusCodeSynced)).
+		Expect(HealthIs(health.HealthStatusHealthy)).
+		When().
+		// delete files to remove resources
+		DeleteFile("pod.yaml").
+		DeleteFile("rbac.yaml").
+		Refresh(RefreshTypeHard).
+		IgnoreErrors().
+		Then().
+		Expect(SyncStatusIs(SyncStatusCodeOutOfSync)).
+		When().
+		// prune order: pod -> rolebinding -> sa & role
+		Sync("--prune").
+		Wait().
+		Then().
+		Expect(OperationPhaseIs(OperationSucceeded)).
+		Expect(SyncStatusIs(SyncStatusCodeSynced)).
+		Expect(HealthIs(health.HealthStatusHealthy)).
+		Expect(NotPod(func(p v1.Pod) bool { return p.Name == "pod-with-finalizers" })).
+		Expect(ResourceResultNumbering(4))
 }

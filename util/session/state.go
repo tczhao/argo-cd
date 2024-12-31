@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/go-redis/redis/v8"
+	"github.com/redis/go-redis/v9"
 	log "github.com/sirupsen/logrus"
 
 	util "github.com/argoproj/argo-cd/v2/util/io"
@@ -69,9 +69,11 @@ func (storage *userStateStorage) watchRevokedTokens(ctx context.Context) {
 }
 
 func (storage *userStateStorage) loadRevokedTokensSafe() {
-	for err := storage.loadRevokedTokens(); err != nil; {
+	err := storage.loadRevokedTokens()
+	for err != nil {
 		log.Warnf("Failed to resync revoked tokens. retrying again in 1 minute: %v", err)
 		time.Sleep(time.Minute)
+		err = storage.loadRevokedTokens()
 	}
 }
 
@@ -123,6 +125,10 @@ func (storage *userStateStorage) IsTokenRevoked(id string) bool {
 	return storage.revokedTokens[id]
 }
 
+func (storage *userStateStorage) GetLockObject() *sync.RWMutex {
+	return &storage.lock
+}
+
 type UserStateStorage interface {
 	Init(ctx context.Context)
 	// GetLoginAttempts return number of concurrent login attempts
@@ -133,4 +139,6 @@ type UserStateStorage interface {
 	RevokeToken(ctx context.Context, id string, expiringAt time.Duration) error
 	// IsTokenRevoked checks if given token is revoked
 	IsTokenRevoked(id string) bool
+	// GetLockObject returns a lock used by the storage
+	GetLockObject() *sync.RWMutex
 }

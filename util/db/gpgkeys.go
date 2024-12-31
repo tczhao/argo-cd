@@ -2,8 +2,8 @@ package db
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 
 	log "github.com/sirupsen/logrus"
@@ -15,17 +15,22 @@ import (
 
 // Validates a single GnuPG key and returns the key's ID
 func validatePGPKey(keyData string) (*appsv1.GnuPGPublicKey, error) {
-	f, err := ioutil.TempFile("", "gpg-public-key")
+	f, err := os.CreateTemp("", "gpg-public-key")
 	if err != nil {
 		return nil, err
 	}
 	defer os.Remove(f.Name())
 
-	err = ioutil.WriteFile(f.Name(), []byte(keyData), 0600)
+	err = os.WriteFile(f.Name(), []byte(keyData), 0o600)
 	if err != nil {
 		return nil, err
 	}
-	defer f.Close()
+	defer func() {
+		err = f.Close()
+		if err != nil {
+			log.Errorf("error closing file %q: %v", f.Name(), err)
+		}
+	}()
 
 	parsed, err := gpg.ValidatePGPKeys(f.Name())
 	if err != nil {
@@ -34,7 +39,7 @@ func validatePGPKey(keyData string) (*appsv1.GnuPGPublicKey, error) {
 
 	// Each key/value pair in the config map must exactly contain one public key, with the (short) GPG key ID as key
 	if len(parsed) != 1 {
-		return nil, fmt.Errorf("More than one key found in input data")
+		return nil, errors.New("More than one key found in input data")
 	}
 
 	var retKey *appsv1.GnuPGPublicKey = nil
@@ -47,7 +52,7 @@ func validatePGPKey(keyData string) (*appsv1.GnuPGPublicKey, error) {
 		retKey.KeyData = keyData
 		return retKey, nil
 	} else {
-		return nil, fmt.Errorf("Could not find the GPG key")
+		return nil, errors.New("Could not find the GPG key")
 	}
 }
 
@@ -97,10 +102,6 @@ func (db *db) AddGPGPublicKey(ctx context.Context, keyData string) (map[string]*
 		return nil, nil, err
 	}
 
-	if keysCM.Data == nil {
-		keysCM.Data = make(map[string]string)
-	}
-
 	for kid, key := range keys {
 		if _, ok := keysCM.Data[kid]; ok {
 			skipped = append(skipped, kid)
@@ -125,10 +126,6 @@ func (db *db) DeleteGPGPublicKey(ctx context.Context, keyID string) error {
 	keysCM, err := db.settingsMgr.GetConfigMapByName(common.ArgoCDGPGKeysConfigMapName)
 	if err != nil {
 		return err
-	}
-
-	if keysCM.Data == nil {
-		return fmt.Errorf("No such key configured: %s", keyID)
 	}
 
 	if _, ok := keysCM.Data[keyID]; !ok {
